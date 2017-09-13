@@ -9,25 +9,35 @@ $url = "https://sampleorg.crm4.dynamics.com"
 ; Benutzername und Passwort
 $uname = "admin@sampleorg.onmicrosoft.com"
 $passwd = "geheim"
-
 ; Browser öffnen
-Opt("WinTitleMatchMode", 2) ;1=start, 2=subStr, 3=exact, 4=advanced, -1 to -4=Nocase
+ConsoleWrite("Starting IE in private mode .. " & @CRLF)
 Run("C:\Program Files (x86)\Internet Explorer\iexplore.exe -private -new " & $url,"")
 
-; Richtiges Fehster Finden
-$IEHwnd = WinWaitActive("[TITLE:Bei Ihrem Konto anmelden; CLASS:IEFrame]")
-$IE = _IEAttach($IEHwnd,"HWND")
+; 3 Sekunden warten
+ConsoleWrite("Sleep .. " & @CRLF)
+Sleep(3000)
 
-; Formular suchen und ausführen
-$form = _IEFormGetCollection($IE, 0)
+; Check od das Microsoft Login Fenster angezeigt wird
+ConsoleWrite("Attach to IE Window .. " & @CRLF)
+$IE = _IEAttach("Bei Ihrem Konto anmelden")
 
-$form_login = _IEFormElementGetObjByName($form, "login")
-_IEFormElementSetValue($form_login, $uname)
+If @error = 0 Then
 
-$form_passwd = _IEFormElementGetObjByName($form, "passwd")
-_IEFormElementSetValue($form_passwd, $passwd)
+  ConsoleWrite("Perform AutoLogin .. " & @CRLF)
 
-; Formular absenden
-_IEFormSubmit($form)
+  ; Formular suchen und ausführen
+  $form = _IEFormGetCollection($IE, 0)
 
+  $form_login = _IEFormElementGetObjByName($form, "login")
+  _IEFormElementSetValue($form_login, $uname)
 
+  $form_passwd = _IEFormElementGetObjByName($form, "passwd")
+  _IEFormElementSetValue($form_passwd, $passwd)
+
+  ; Formular absenden
+  _IEFormSubmit($form, 0)
+
+EndIf
+
+ConsoleWrite("DONE" & @CRLF)
+Exit
